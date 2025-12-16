@@ -1,5 +1,8 @@
 package main
 
+import(
+	"strings"
+)
 
 func cleanInput(text string) []string{
 		/*
@@ -10,7 +13,12 @@ func cleanInput(text string) []string{
 			Charmander Bulbasaur PIKACHU -> ["charmander", "bulbasaur", "pikachu"]
 	*/
 
+	pokemon := strings.Fields(text)
 	
+	for i, p := range pokemon{
+		pokemon[i] = strings.ToLower(p)
+	}
 
-	return []string{}
+
+	return pokemon
 }

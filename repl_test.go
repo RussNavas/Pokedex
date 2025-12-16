@@ -21,18 +21,15 @@ func TestCleanInput(t *testing.T){
 			input:		" hello world ",
 			expected: 	[]string{"hello", "world"},
 		},
-		/*
 		{
-			input:		"",
-			expected:	[]string{""},
+			input:		"Charmander Bulbasaur PIKACHU",
+			expected:	[]string{"charmander", "bulbasaur", "pikachu"},
 		},
 		{
-			input:		"",
-			expected:	[]string{""},
+			input:		"  cHarManDer       bulbasaur PikaChu",
+			expected:	[]string{"charmander", "bulbasaur", "pikachu"},
 		},
-		*/
 	}
-	// add more cases here
 
 
 	// Loop over cases and run the tests:
