@@ -53,3 +53,25 @@ func TestCleanInput(t *testing.T){
 		}
 	}
 }
+
+func TestCommands(t *testing.T) {
+    // 1. Get the map of commands (you might need to export this or make a getter)
+    commands := getCommands() 
+
+    // 2. Define the cases you want to check exist
+    expected := []string{"help", "exit"}
+
+    // 3. Loop through expected commands and ensure they exist in the map
+    for _, name := range expected {
+        cmd, ok := commands[name]
+        if !ok {
+            t.Errorf("Command %s not found in registry", name)
+            continue
+        }
+        
+        // Optional: Check if the name matches the key
+        if cmd.name != name {
+             t.Errorf("Expected command name %s, got %s", name, cmd.name)
+        }
+    }
+}
