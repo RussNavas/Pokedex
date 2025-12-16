@@ -1,9 +1,10 @@
 package main
 
-import(
-	"strings"
+import (
 	"fmt"
 	"os"
+	"strings"
+	"github.com/RussNavas/pokedex/internal/pokeapi"
 )
 
 
@@ -30,7 +31,14 @@ var commands map[string]cliCommand
 type cliCommand struct {
 	name		string
 	description string
-	callback	func() error
+	callback	func(*Config) error
+}
+
+
+type Config struct{
+	Next	 *string
+	Previous *string
+	Client	 *pokeapi.Client
 }
 
 
@@ -46,11 +54,21 @@ func getCommands() map[string]cliCommand {
 			description: "Exit the Pokedex",
 			callback:    commandExit,
 		},
+		"map": {
+			name:		"map",
+			description: "Displays the names of 20 location areas in the Pokemon world",
+			callback:	commandMap,
+		},
+		"mapb": {
+			name:		"mapb",
+			description: "Displays the names of the previous 20 location areas in the Pokemon world",
+			callback:	commandMapb,
+		},
 	}
 }
 
 
-func commandHelp() error {
+func commandHelp(config *Config) error {
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
 	fmt.Println("")
@@ -62,8 +80,48 @@ func commandHelp() error {
 }
 
 
-func commandExit() error {
+func commandExit(config *Config) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
+
+
+func commandMap(config *Config) error {
+	locationsResp, err := config.Client.ListLocationAreas(config.Next)
+	
+
+	if err != nil {
+		return err
+	}
+
+	config.Next = locationsResp.Next
+	config.Previous = locationsResp.Previous
+
+	for _, loc := range locationsResp.Results{
+		fmt.Println(loc.Name)
+	}
+
+	return nil
+}
+
+func commandMapb(config *Config) error {
+	if config.Previous == nil {
+		return fmt.Errorf("you are on the first page")
+	}
+
+	locationsResp, err := config.Client.ListLocationAreas(config.Previous)
+	if err != nil {
+		return err
+	}
+
+	config.Next = locationsResp.Next
+	config.Previous = locationsResp.Previous
+
+	for _, loc := range locationsResp.Results{
+		fmt.Println(loc.Name)
+	}
+
+	return nil
+}
+

@@ -1,13 +1,20 @@
 package main
 
 import (
-	"fmt"
 	"bufio"
+	"fmt"
 	"os"
+	"time"
+	"github.com/RussNavas/pokedex/internal/pokeapi"
 )
 
 
 func main() {
+
+	client := pokeapi.NewClient(5 * time.Second)
+	config := &Config{
+		Client: &client,
+	}
 
 	commands := getCommands()
 
@@ -25,7 +32,7 @@ func main() {
 
 		command, exists := commands[commandName]
 		if exists{
-			err := command.callback()
+			err := command.callback(config)
 			if err != nil{
 				fmt.Println(err)
 			}
