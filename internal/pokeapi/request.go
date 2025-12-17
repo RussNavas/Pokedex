@@ -13,11 +13,21 @@ func (c *Client) ListLocationAreas(pageURL *string) (LocationAreasResp, error){
 		If pageURL is proved, it uses that URL; otherwise, 
 		it defaults to the first page.
 	*/
-
 	url := "https://pokeapi.co/api/v2/location-area"
 	if pageURL != nil{
 		url = *pageURL
 	}
+
+	// check cache
+	if val, ok := c.cache.Get(url); ok{
+		locationsResp := LocationAreasResp{}
+		err := json.Unmarshal(val, &locationsResp)
+		if err != nil {
+			return LocationAreasResp{}, err
+		}
+		return locationsResp, nil
+	}
+
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -38,6 +48,9 @@ func (c *Client) ListLocationAreas(pageURL *string) (LocationAreasResp, error){
 	if err != nil {
 		return LocationAreasResp{}, err
 	}
+
+	// Add to Cache
+	c.cache.Add(url, data)
 
 	LocationsResp := LocationAreasResp{}
 	err = json.Unmarshal(data, &LocationsResp)
