@@ -16,6 +16,7 @@ func main() {
 	// make config
 	config := &Config{
 		Client: &client,
+		Pokedex: make(map[string]pokeapi.Pokemon),
 	}
 
 	commands := getCommands()
