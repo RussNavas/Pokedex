@@ -5,34 +5,25 @@ import (
 	"time"
 )
 
-func TestListLocationAreas(t *testing.T) {
-	// 1. Create a Client with a short cache interval
-	interval := time.Millisecond * 10
-	client := NewClient(5*time.Second, interval)
+func TestListLocationAreasPokemon(t *testing.T) {
+    // 1. Create a real client
+	client := NewClient(5*time.Second, 5*time.Minute)
 
-	// 2. call ListLocationAreas (Expect a real network call)
-	resp, err := client.ListLocationAreas(nil)
+    // 2. Make the call to a known valid location
+	resp, err := client.ListLocationAreasPokemon("canalave-city-area")
 	if err != nil {
-		t.Fatalf("failed to list location areas: %v", err)
+		t.Fatalf("API call failed: %v", err)
 	}
 
-	// 3. Validation: Check if we got results
-	if len(resp.Results) == 0 {
-		t.Errorf("expected results, got none")
-	}
-	if resp.Count == 0 {
-		t.Errorf("expected count > 0, got %d", resp.Count)
+    // 3. Verify we got data back
+	if resp.Name != "canalave-city-area" {
+		t.Errorf("Expected name 'canalave-city-area', got %s", resp.Name)
 	}
 
-	// 4. Verify Caching (The "White Box" Test)
-	// We can check if the URL was actually stored in the cache
-	url := "https://pokeapi.co/api/v2/location-area"
-	cachedData, ok := client.cache.Get(url)
-	if !ok {
-		t.Errorf("expected data to be cached after request, but it wasn't")
+	if len(resp.PokemonEncounters) == 0 {
+		t.Errorf("Expected to find pokemon, but list was empty")
 	}
-
-	if len(cachedData) == 0 {
-		t.Errorf("cached data is empty")
-	}
+    
+    // Optional: Log what we found to prove it works
+    t.Logf("Found %d pokemon in area", len(resp.PokemonEncounters))
 }

@@ -11,7 +11,9 @@ import (
 
 func main() {
 
+	// make client
 	client := pokeapi.NewClient(5 * time.Second, 5 * time.Minute)
+	// make config
 	config := &Config{
 		Client: &client,
 	}
@@ -30,9 +32,15 @@ func main() {
 		
 		commandName := words[0]
 
+		args := []string{}
+		if len(words) > 1{
+			args = words[1:]
+		}
+
+
 		command, exists := commands[commandName]
 		if exists{
-			err := command.callback(config)
+			err := command.callback(config, args)
 			if err != nil{
 				fmt.Println(err)
 			}
